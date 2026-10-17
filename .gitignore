@@ -1,0 +1,15 @@
+.DS_Store
+.build/
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+.impeccable/mocks/
+.impeccable/build-state*
+.impeccable/cache/
+output/
+*.mov
+*.mp4
+*.dmg
+*.zip
