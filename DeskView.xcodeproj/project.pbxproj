@@ -1,0 +1,283 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+		CD9641A95209778B1DDFDD85 = {
+			isa = "PBXFileReference";
+			lastKnownFileType = "sourcecode.swift";
+			path = "DemoFrames.swift";
+			sourceTree = "<group>";
+		};
+		19B79F26052AB15FC8171D3E = {
+			isa = "PBXBuildFile";
+			fileRef = CD9641A95209778B1DDFDD85;
+		};
+		3592D47A2366DE0C74270070 = {
+			isa = "PBXFileReference";
+			lastKnownFileType = "sourcecode.swift";
+			path = "DeskViewApp.swift";
+			sourceTree = "<group>";
+		};
+		36BC1FECE9C0E7A095C0E832 = {
+			isa = "PBXBuildFile";
+			fileRef = 3592D47A2366DE0C74270070;
+		};
+		5B89E5F9536D15303A5CE922 = {
+			isa = "PBXFileReference";
+			lastKnownFileType = "sourcecode.swift";
+			path = "StudioModel.swift";
+			sourceTree = "<group>";
+		};
+		D96CC922DEDF743E12869219 = {
+			isa = "PBXBuildFile";
+			fileRef = 5B89E5F9536D15303A5CE922;
+		};
+		59E5BE74705487C7A848ACC5 = {
+			isa = "PBXFileReference";
+			lastKnownFileType = "sourcecode.swift";
+			path = "StudioPanels.swift";
+			sourceTree = "<group>";
+		};
+		773ADC559BD5D4317F026299 = {
+			isa = "PBXBuildFile";
+			fileRef = 59E5BE74705487C7A848ACC5;
+		};
+		171E821C290414B222716CB4 = {
+			isa = "PBXFileReference";
+			lastKnownFileType = "sourcecode.swift";
+			path = "StudioView.swift";
+			sourceTree = "<group>";
+		};
+		8A35CCD212C9BADE33AF3689 = {
+			isa = "PBXBuildFile";
+			fileRef = 171E821C290414B222716CB4;
+		};
+		8873151C067A966D8A2B0623 = {
+			isa = "PBXFileReference";
+			lastKnownFileType = "text.plist.xml";
+			path = "Info.plist";
+			sourceTree = "<group>";
+		};
+		0712B7D5FE3BF4EC20799271 = {
+			isa = "PBXFileReference";
+			lastKnownFileType = "text.plist.entitlements";
+			path = "DeskView.entitlements";
+			sourceTree = "<group>";
+		};
+		0D04BFEB7D64B71C74FC925C = {
+			isa = "PBXGroup";
+			path = "App";
+			sourceTree = "<group>";
+			children = (CD9641A95209778B1DDFDD85, 3592D47A2366DE0C74270070, 5B89E5F9536D15303A5CE922, 59E5BE74705487C7A848ACC5, 171E821C290414B222716CB4, 8873151C067A966D8A2B0623, 0712B7D5FE3BF4EC20799271, 2BF35B3FB72A3D4E876979D6, 8BF729FFE074CAEE622C0292);
+		};
+		A8792157CB4F27FB949C035F = {
+			isa = "PBXFileReference";
+			explicitFileType = "wrapper.application";
+			includeInIndex = 0;
+			path = "deskView().app";
+			sourceTree = "BUILT_PRODUCTS_DIR";
+		};
+		0A3E27B8CA818264D75C8D81 = {
+			isa = "PBXGroup";
+			name = "Products";
+			sourceTree = "<group>";
+			children = (A8792157CB4F27FB949C035F);
+		};
+		0D6E4079E36703EBD37C0072 = {
+			isa = "PBXGroup";
+			sourceTree = "<group>";
+			children = (0D04BFEB7D64B71C74FC925C, 0A3E27B8CA818264D75C8D81);
+		};
+		C780BA21F61E4BD87706C2D1 = {
+			isa = "XCLocalSwiftPackageReference";
+			relativePath = ".";
+		};
+		68504DB20BFD5A1A2A6F800E = {
+			isa = "XCRemoteSwiftPackageReference";
+			repositoryURL = "https://github.com/Belweave/FoyerKit.git";
+			requirement = {
+				kind = "revision";
+				revision = "9b4ed7e5d3fd1b208b59c1675fdbf48e66c54509";
+			};
+		};
+		28027F33DDFE9A24E6EB7A0B = {
+			isa = "XCSwiftPackageProductDependency";
+			productName = "DeskViewKit";
+		};
+		637694EE091E1E6D9B346537 = {
+			isa = "XCSwiftPackageProductDependency";
+			package = 68504DB20BFD5A1A2A6F800E;
+			productName = "FoyerKit";
+		};
+		681126D89002E0C1BF05F4DF = {
+			isa = "PBXBuildFile";
+			productRef = 28027F33DDFE9A24E6EB7A0B;
+		};
+		F7A01B4E25AB0109332BAD44 = {
+			isa = "PBXBuildFile";
+			productRef = 637694EE091E1E6D9B346537;
+		};
+		E2AA269EB967A8853A258BFA = {
+			isa = "PBXFrameworksBuildPhase";
+			buildActionMask = 2147483647;
+			files = (681126D89002E0C1BF05F4DF, F7A01B4E25AB0109332BAD44);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		878A52FC5FF6A57D50B7B870 = {
+			isa = "PBXSourcesBuildPhase";
+			buildActionMask = 2147483647;
+			files = (19B79F26052AB15FC8171D3E, 36BC1FECE9C0E7A095C0E832, D96CC922DEDF743E12869219, 773ADC559BD5D4317F026299, 8A35CCD212C9BADE33AF3689);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		41D311A605520FC7B8B9A980 = {
+			isa = "PBXResourcesBuildPhase";
+			buildActionMask = 2147483647;
+			files = (620CC7B264643D4AB4FE5169, 6705CD5012A843999155C633);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2BF35B3FB72A3D4E876979D6 = {
+			isa = "PBXFileReference";
+			lastKnownFileType = "text";
+			path = "Resources/ThirdPartyNotices.txt";
+			sourceTree = "<group>";
+		};
+		620CC7B264643D4AB4FE5169 = {
+			isa = "PBXBuildFile";
+			fileRef = 2BF35B3FB72A3D4E876979D6;
+		};
+		8BF729FFE074CAEE622C0292 = {
+			isa = "PBXFileReference";
+			lastKnownFileType = "folder.assetcatalog";
+			path = "Assets.xcassets";
+			sourceTree = "<group>";
+		};
+		6705CD5012A843999155C633 = {
+			isa = "PBXBuildFile";
+			fileRef = 8BF729FFE074CAEE622C0292;
+		};
+		73EBF6644258C120893E685D = {
+			isa = "XCBuildConfiguration";
+			name = "Debug";
+			buildSettings = {
+				ARCHS = "arm64";
+				SDKROOT = "macosx";
+				MACOSX_DEPLOYMENT_TARGET = "26.0";
+				SWIFT_VERSION = "6.0";
+				CLANG_ENABLE_MODULES = "YES";
+				SWIFT_STRICT_CONCURRENCY = "complete";
+				ENABLE_USER_SCRIPT_SANDBOXING = "YES";
+				DEBUG_INFORMATION_FORMAT = "dwarf";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG";
+				ENABLE_TESTABILITY = "YES";
+			};
+		};
+		6C7EFF6369083C8E1F2B1994 = {
+			isa = "XCBuildConfiguration";
+			name = "Debug";
+			buildSettings = {
+				PRODUCT_NAME = "DeskView";
+				WRAPPER_NAME = "deskView().app";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.belweave.deskView";
+				INFOPLIST_FILE = "App/Info.plist";
+				GENERATE_INFOPLIST_FILE = "NO";
+				MARKETING_VERSION = "0.1.0";
+				CURRENT_PROJECT_VERSION = "1";
+				CODE_SIGN_STYLE = "Manual";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_ENTITLEMENTS = "App/DeskView.entitlements";
+				ENABLE_HARDENED_RUNTIME = "YES";
+				ENABLE_APP_SANDBOX = "NO";
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
+				SWIFT_EMIT_LOC_STRINGS = "YES";
+				COMBINE_HIDPI_IMAGES = "YES";
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+			};
+		};
+		0B0C687DF8B6B8DC790B519C = {
+			isa = "XCBuildConfiguration";
+			name = "Release";
+			buildSettings = {
+				ARCHS = "arm64";
+				SDKROOT = "macosx";
+				MACOSX_DEPLOYMENT_TARGET = "26.0";
+				SWIFT_VERSION = "6.0";
+				CLANG_ENABLE_MODULES = "YES";
+				SWIFT_STRICT_CONCURRENCY = "complete";
+				ENABLE_USER_SCRIPT_SANDBOXING = "YES";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				ENABLE_TESTABILITY = "NO";
+			};
+		};
+		DD75E2CB1C510A828AC72D96 = {
+			isa = "XCBuildConfiguration";
+			name = "Release";
+			buildSettings = {
+				PRODUCT_NAME = "DeskView";
+				WRAPPER_NAME = "deskView().app";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.belweave.deskView";
+				INFOPLIST_FILE = "App/Info.plist";
+				GENERATE_INFOPLIST_FILE = "NO";
+				MARKETING_VERSION = "0.1.0";
+				CURRENT_PROJECT_VERSION = "1";
+				CODE_SIGN_STYLE = "Manual";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_ENTITLEMENTS = "App/DeskView.entitlements";
+				ENABLE_HARDENED_RUNTIME = "YES";
+				ENABLE_APP_SANDBOX = "NO";
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
+				SWIFT_EMIT_LOC_STRINGS = "YES";
+				COMBINE_HIDPI_IMAGES = "YES";
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+			};
+		};
+		4AA05EC3301949773ED0AC0A = {
+			isa = "XCConfigurationList";
+			buildConfigurations = (73EBF6644258C120893E685D, 0B0C687DF8B6B8DC790B519C);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+		1D9DA57D20EFD583398AC15A = {
+			isa = "XCConfigurationList";
+			buildConfigurations = (6C7EFF6369083C8E1F2B1994, DD75E2CB1C510A828AC72D96);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+		34A04005BCAF206EEC990BD9 = {
+			isa = "PBXNativeTarget";
+			name = "deskView";
+			productName = "DeskView";
+			productReference = A8792157CB4F27FB949C035F;
+			productType = "com.apple.product-type.application";
+			buildConfigurationList = 1D9DA57D20EFD583398AC15A;
+			buildPhases = (878A52FC5FF6A57D50B7B870, E2AA269EB967A8853A258BFA, 41D311A605520FC7B8B9A980);
+			buildRules = ();
+			dependencies = ();
+			packageProductDependencies = (28027F33DDFE9A24E6EB7A0B, 637694EE091E1E6D9B346537);
+		};
+		244210E48437B6556980A702 = {
+			isa = "PBXProject";
+			attributes = {
+				BuildIndependentTargetsInParallel = "YES";
+				LastUpgradeCheck = "2710";
+			};
+			buildConfigurationList = 4AA05EC3301949773ED0AC0A;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = "en";
+			hasScannedForEncodings = 0;
+			knownRegions = ("en", "Base");
+			mainGroup = 0D6E4079E36703EBD37C0072;
+			productRefGroup = 0A3E27B8CA818264D75C8D81;
+			projectDirPath = "";
+			projectRoot = "";
+			packageReferences = (C780BA21F61E4BD87706C2D1, 68504DB20BFD5A1A2A6F800E);
+			targets = (34A04005BCAF206EEC990BD9);
+		};
+	};
+	rootObject = 244210E48437B6556980A702;
+}

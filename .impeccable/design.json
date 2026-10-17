@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-17T19:42:55Z",
+  "title": "Design System: deskView()",
+  "extensions": {
+    "colorMeta": {
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Deep ink",
+        "tonalRamp": [
+          "oklch(15% 0.01665 248.83)",
+          "oklch(26% 0.01665 248.83)",
+          "oklch(38% 0.01665 248.83)",
+          "oklch(49% 0.01665 248.83)",
+          "oklch(61% 0.01665 248.83)",
+          "oklch(72% 0.01665 248.83)",
+          "oklch(84% 0.01665 248.83)",
+          "oklch(95% 0.01665 248.83)"
+        ]
+      },
+      "shell": {
+        "role": "neutral",
+        "displayName": "Blue charcoal",
+        "tonalRamp": [
+          "oklch(15% 0.02685 251.91)",
+          "oklch(26% 0.02685 251.91)",
+          "oklch(38% 0.02685 251.91)",
+          "oklch(49% 0.02685 251.91)",
+          "oklch(61% 0.02685 251.91)",
+          "oklch(72% 0.02685 251.91)",
+          "oklch(84% 0.02685 251.91)",
+          "oklch(95% 0.02685 251.91)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Ice",
+        "tonalRamp": [
+          "oklch(15% 0.07243 219.05)",
+          "oklch(26% 0.07243 219.05)",
+          "oklch(38% 0.07243 219.05)",
+          "oklch(49% 0.07243 219.05)",
+          "oklch(61% 0.07243 219.05)",
+          "oklch(72% 0.07243 219.05)",
+          "oklch(84% 0.07243 219.05)",
+          "oklch(95% 0.07243 219.05)"
+        ]
+      },
+      "secondary": {
+        "role": "neutral",
+        "displayName": "Cool secondary type",
+        "tonalRamp": [
+          "oklch(15% 0.03207 248.23)",
+          "oklch(26% 0.03207 248.23)",
+          "oklch(38% 0.03207 248.23)",
+          "oklch(49% 0.03207 248.23)",
+          "oklch(61% 0.03207 248.23)",
+          "oklch(72% 0.03207 248.23)",
+          "oklch(84% 0.03207 248.23)",
+          "oklch(95% 0.03207 248.23)"
+        ]
+      },
+      "record": {
+        "role": "secondary",
+        "displayName": "Recording signal",
+        "tonalRamp": [
+          "oklch(15% 0.20551 26.64)",
+          "oklch(26% 0.20551 26.64)",
+          "oklch(38% 0.20551 26.64)",
+          "oklch(49% 0.20551 26.64)",
+          "oklch(61% 0.20551 26.64)",
+          "oklch(72% 0.20551 26.64)",
+          "oklch(84% 0.20551 26.64)",
+          "oklch(95% 0.20551 26.64)"
+        ]
+      },
+      "record-fill": {
+        "role": "secondary",
+        "displayName": "Record fill",
+        "tonalRamp": [
+          "oklch(15% 0.20177 28.54)",
+          "oklch(26% 0.20177 28.54)",
+          "oklch(38% 0.20177 28.54)",
+          "oklch(49% 0.20177 28.54)",
+          "oklch(61% 0.20177 28.54)",
+          "oklch(72% 0.20177 28.54)",
+          "oklch(84% 0.20177 28.54)",
+          "oklch(95% 0.20177 28.54)"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26% 0.00000 0.00)",
+          "oklch(38% 0.00000 0.00)",
+          "oklch(49% 0.00000 0.00)",
+          "oklch(61% 0.00000 0.00)",
+          "oklch(72% 0.00000 0.00)",
+          "oklch(84% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ]
+      },
+      "black": {
+        "role": "neutral",
+        "displayName": "Black",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26% 0.00000 0.00)",
+          "oklch(38% 0.00000 0.00)",
+          "oklch(49% 0.00000 0.00)",
+          "oklch(61% 0.00000 0.00)",
+          "oklch(72% 0.00000 0.00)",
+          "oklch(84% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Studio heading."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Sources, Framing and setup-guide step headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Inspector rows, zoom values and explanatory guide copy."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Source labels, recording filenames and output-format menu."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Footer status, pan labels and small utility actions."
+      },
+      "micro": {
+        "displayName": "Micro",
+        "purpose": "Helper copy and source placeholders."
+      },
+      "layout-label": {
+        "displayName": "Layout label",
+        "purpose": "Layout choices on the transport shelf."
+      },
+      "record-label": {
+        "displayName": "Record label",
+        "purpose": "Record, Stop and Saving…."
+      },
+      "status": {
+        "displayName": "Status",
+        "purpose": "Labeled status pills."
+      },
+      "timecode": {
+        "displayName": "Timecode",
+        "purpose": "Recording timer using the system monospaced design."
+      }
+    },
+    "shadows": [],
+    "motion": [],
+    "breakpoints": [],
+    "tonalRampProvenance": "Synthesized OKLCH lightness explorations for the panel only, preserving each source hue and chroma. These are not app palette tokens, approved state colors or contrast assertions; rendering may gamut-map extreme steps.",
+    "nativeMaterials": [
+      {
+        "name": "Panel and header material",
+        "value": ".ultraThinMaterial",
+        "source": "App/StudioView.swift: header; App/StudioPanels.swift: SourceSidebar and FramingInspector",
+        "purpose": "Native translucent supporting regions."
+      },
+      {
+        "name": "Transport glass",
+        "value": ".glassEffect(.regular, in: RoundedRectangle(...))",
+        "source": "App/StudioView.swift: transport",
+        "purpose": "One grouped recording-control shelf; native system supplies material, edge and depth."
+      },
+      {
+        "name": "Snapshot glass",
+        "value": ".buttonStyle(.glass)",
+        "source": "App/StudioView.swift: transport",
+        "purpose": "Native glass snapshot action."
+      }
+    ],
+    "nativeSemanticColors": [
+      {
+        "name": "Availability",
+        "value": "SwiftUI.Color.green",
+        "purpose": "Receiving-frames indicators and active-preview status."
+      },
+      {
+        "name": "Warning and demo",
+        "value": "SwiftUI.Color.orange",
+        "purpose": "Missing-source messaging and explicit demo status."
+      },
+      {
+        "name": "Welcome tint",
+        "value": "SwiftUI.Color.cyan",
+        "purpose": "FoyerKit welcome mark and tint."
+      }
+    ],
+    "nativeTypography": {
+      "unit": "macOS logical points",
+      "systemFamily": "SwiftUI Font.system and semantic system fonts; no bundled font files or web font stack.",
+      "metrics": "Line height, tracking and native-control metrics are system managed. The monospaced role uses Font.system(size:design: .monospaced)."
+    },
+    "nativeMotion": {
+      "source": "App/DeskViewApp.swift: Foyer playsLaunchAnimation: false",
+      "policy": "No custom app transition curves are defined in the sampled views. Keep previews steady; preserve native accessibility and Reduce Motion behavior."
+    },
+    "windowSizing": {
+      "unit": "pt",
+      "studio": {
+        "default": [
+          1440,
+          900
+        ],
+        "minimum": [
+          1120,
+          740
+        ]
+      },
+      "output": {
+        "default": [
+          960,
+          540
+        ],
+        "minimum": [
+          480,
+          270
+        ]
+      },
+      "recordingsSheet": {
+        "width": 760,
+        "height": 500
+      },
+      "setupGuide": {
+        "width": 700
+      },
+      "settings": {
+        "width": 520
+      },
+      "behavior": "Studio retains fixed-width source and framing panels with a flexible center workspace; both panels scroll. No alternate width breakpoint is implemented."
+    },
+    "nativeComponents": [
+      {
+        "name": "Record",
+        "kind": "button",
+        "refersTo": "button-record",
+        "source": "App/StudioView.swift: transport",
+        "swiftUI": ".buttonStyle(.plain); .background(StudioTheme.recordFill.opacity(available ? 1 : 0.3), in: Capsule()); .foregroundStyle(.white)",
+        "description": "Label frame is normative in frontmatter. Uses Record/Stop/Saving… text, a recording/stop symbol and a monospaced timer. Saving disables it; unavailable idle capture dims its fill."
+      },
+      {
+        "name": "Snapshot",
+        "kind": "button",
+        "refersTo": "button-snapshot",
+        "source": "App/StudioView.swift: transport",
+        "swiftUI": ".buttonStyle(.glass)",
+        "description": "Native glass camera-symbol button. Frontmatter width and height are the label frame. Disabled when capture is unavailable; native style owns outer metrics and interaction states."
+      },
+      {
+        "name": "Layout choice",
+        "kind": "nav",
+        "refersTo": "layout-item",
+        "source": "App/StudioView.swift: transport",
+        "swiftUI": ".buttonStyle(.plain); .accessibilityAddTraits(isSelected ? [.isSelected] : [])",
+        "description": "Equal-width symbol-and-label buttons. Selection uses layout-item-selected. Editing is disabled while busy."
+      },
+      {
+        "name": "Transport shelf",
+        "kind": "custom",
+        "refersTo": "transport-shelf",
+        "source": "App/StudioView.swift: transport",
+        "swiftUI": ".glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))",
+        "description": "Single native-glass group for layouts, Snapshot and Record. The shape value is owned by the referenced frontmatter token."
+      },
+      {
+        "name": "Source preview",
+        "kind": "custom",
+        "refersTo": "source-preview",
+        "source": "App/StudioPanels.swift: SourceSidebar.source",
+        "swiftUI": "Image(decorative: image, scale: 1).resizable().aspectRatio(contentMode: .fill); .clipShape(RoundedRectangle(cornerRadius: 9))",
+        "description": "A clipped thumbnail under a source picker and availability symbol. Shape and height are owned by the referenced frontmatter token."
+      },
+      {
+        "name": "Composed preview",
+        "kind": "custom",
+        "refersTo": "composed-preview",
+        "source": "App/StudioView.swift: workspace",
+        "swiftUI": "Image(decorative: preview, scale: 1).resizable().aspectRatio(contentMode: .fit)",
+        "description": "Image preserves output aspect ratio inside a well that expands with the available workspace. Optional thirds grid is preview only."
+      },
+      {
+        "name": "Status pill",
+        "kind": "chip",
+        "refersTo": "status-pill",
+        "source": "App/StudioView.swift: StatusPill",
+        "swiftUI": "Label(title, systemImage: symbol).foregroundStyle(color); .background(color.opacity(0.12), in: Capsule())",
+        "description": "Recording, Preview on and Demo test chart status with native semantic color, text and symbol."
+      },
+      {
+        "name": "Demo source field",
+        "kind": "custom",
+        "refersTo": "demo-source-field",
+        "source": "App/StudioPanels.swift: SourceSidebar.demoSource",
+        "swiftUI": "Text(title).frame(maxWidth: .infinity, alignment: .leading)",
+        "description": "Non-editable labeled demo source row. Uses the referenced frontmatter tokens; does not imitate an active camera picker."
+      },
+      {
+        "name": "Native framing controls",
+        "kind": "input",
+        "source": "App/StudioPanels.swift: FramingInspector and FramingControls",
+        "swiftUI": "Picker(...).pickerStyle(.segmented); Slider(...); Toggle(...).toggleStyle(.switch).controlSize(.small)",
+        "description": "System pickers, sliders, switch and rotation buttons. Native appearance, focus and disabled states; no custom field or focus-ring values."
+      }
+    ],
+    "formatLimitations": [
+      "The schema reference requests self-contained HTML/CSS component previews. This is a native SwiftUI app, so the top-level components preview array is intentionally empty. Native component descriptors are recorded in extensions.nativeComponents; no web preview or rendering parity is claimed.",
+      "Native materials, system color resolution, system shadows, focus states and control metrics cannot be represented faithfully as CSS constants. Only explicit source values are tokenized."
+    ],
+    "evidence": {
+      "sourceFiles": [
+        "App/StudioView.swift",
+        "App/StudioPanels.swift",
+        "App/DeskViewApp.swift"
+      ],
+      "product": "PRODUCT.md",
+      "approvedSurface": ".impeccable/surfaces/studio.md",
+      "approvedMockup": ".impeccable/mocks/studio-a.png",
+      "approvalSidecar": ".impeccable/mocks/studio-a.png.json",
+      "reviewImages": [
+        ".impeccable/review/desktop.png",
+        ".impeccable/review/compact.png"
+      ],
+      "authority": "Source constants determine tokens, including the updated darker Record fill. Review images establish the default and compact studio composition; illustrative mockup photographs do not ship."
+    },
+    "notCanonized": [
+      "The provisional seed swatches and strict eight-point rhythm were reconciled with actual StudioTheme constants and local native spacing. The seed claim of monospaced dimensions/frame-rate labels was not retained because the current output-format menu uses proportional system type.",
+      "No custom shadow, focus ring, motion curve, CSS breakpoint or HTML/CSS control replica was invented to satisfy a web-oriented preview format."
+    ]
+  },
+  "components": [],
+  "narrative": {
+    "northStar": "Blue-hour drawing studio",
+    "overview": "A native Mac studio seen at blue hour: deep ink around the image, cool translucent Liquid Glass controls, clear system type, and a warm red recording action. The interface feels precise and quiet so camera content carries the attention. SwiftUI and native Liquid Glass are confirmed product choices.\n\nUse the standard Mac vocabulary of buttons, pickers, sliders, menus, keyboard shortcuts, sheets and resizable windows. Glass groups operating controls; the source and framing panels use native material. FoyerKit owns the welcome experience. The approved first studio expression is Canvas first, recorded in `.impeccable/surfaces/studio.md`; its composition is not a requirement for every future sheet or utility window.",
+    "keyCharacteristics": [
+      "Cool ink work surfaces and an ice accent.",
+      "A dominant composed image with quiet supporting controls.",
+      "Grouped native Liquid Glass and material panels.",
+      "Compact system typography, with monospaced timing.",
+      "Explicit recording, hardware, permission and demo states."
+    ],
+    "rules": [
+      {
+        "name": "The Record Role Rule",
+        "body": "Reserve the warm red family for the recording action and recording status. The filled Record button uses the darker record-fill token with white content; the brighter record token identifies recording status.",
+        "section": "colors"
+      },
+      {
+        "name": "The Native Type Rule",
+        "body": "Use SwiftUI system typography and SF Symbols. Keep monospaced type for timing and explicit technical overlays; do not turn the studio into a type specimen.",
+        "section": "typography"
+      },
+      {
+        "name": "The Grouped Glass Rule",
+        "body": "Apply native glass to a functional group or control. Use native material for supporting panels; do not stack decorative glass cards around the camera image.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do preserve the cool ink palette and the separate Record fill and recording-status roles.",
+      "Do use native SwiftUI controls, SF Symbols and FoyerKit onboarding.",
+      "Do preserve the approved Canvas-first studio hierarchy while allowing sheets and utility windows to follow their native task.",
+      "Do keep recording, saving, unavailable-source and permission states explicit in text and symbols.",
+      "Do label test charts as demo content and keep illustrative mockup photography out of production previews.",
+      "Do keep live previews steady and use native motion and accessibility behavior."
+    ],
+    "donts": [
+      "Don't replace native Liquid Glass with a painted blur, decorative gradient or neon glow.",
+      "Don't add decorative glass cards or invented telemetry around the canvas.",
+      "Don't represent a missing or unsupported camera effect as available.",
+      "Don't replace semantic controls and keyboard commands with decorative imitations.",
+      "Don't infer a mobile layout, CSS breakpoint, fixed system-color hex value or custom shadow from this native implementation."
+    ]
+  }
+}
