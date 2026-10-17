@@ -1,0 +1,14 @@
+{
+  "originHash" : "1af86e60695455a392db39c446d0d8473231b103e371d2ddb13975f497037c37",
+  "pins" : [
+    {
+      "identity" : "foyerkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Belweave/FoyerKit.git",
+      "state" : {
+        "revision" : "9b4ed7e5d3fd1b208b59c1675fdbf48e66c54509"
+      }
+    }
+  ],
+  "version" : 3
+}

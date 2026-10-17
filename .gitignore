@@ -8,6 +8,9 @@ xcuserdata/
 .impeccable/mocks/
 .impeccable/build-state*
 .impeccable/cache/
+.impeccable/build/
+.impeccable/review/
+.impeccable/regions.json
 output/
 *.mov
 *.mp4
