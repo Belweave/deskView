@@ -8,7 +8,15 @@
 
 `CaptureService` confines session changes and device configuration to a serial capture queue. Main-camera, paired Desk View and optional microphone sessions run independently. Discovery uses `continuityCamera` and `deskViewCamera`, along with built-in and external devices. `companionDeskViewCamera` determines the preferred Desk View pairing. Discovery changes refresh source choices; runtime errors are scoped to this app's sessions. A separate delegate queue delivers late-frame-discarding video outputs and Float32 microphone audio.
 
-`StudioPipeline` owns mutable media state on one serial media queue. Capture callbacks hand off sample buffers; a 30 Hz timer reads the latest frames. A source becomes unavailable after two seconds without a new frame. UI previews render at 15 Hz with a maximum width of 1280 pixels. Recordings render at the selected 24/30 fps cadence. Preview delivery crosses to the main actor; expensive session start/stop and media encoding never run there.
+`CaptureService` selects a 60 fps format near 1080p when available, and otherwise uses the source's fastest supported rate. Desk View may expose only a 30 fps format. Format selection does not invent additional source motion.
+
+`StudioPipeline` owns configuration and recording state on a serial media queue. Video callbacks replace one frame slot per source under a short lock; they never enqueue a growing list of buffers. A 60 Hz timer composes the latest fresh frames into immutable Core Image graphs. Freshness is measured from capture arrival, with a two-second expiry. `PreviewStream` retains only the newest composition and source images. SwiftUI observes availability changes, not video frames. Clock and 10 Hz audio-meter updates have separate observable objects so they refresh only their small views.
+
+`MetalPreview` uses display-paced `MTKView` surfaces at a 60 Hz target. `MetalPreviewRenderer` encodes Core Image directly into drawable textures on a background queue, with at most two GPU commands in flight and no CPU image readback. Main canvas, source views and clean output use this same path. Demo bitmaps are uploaded once into IOSurface-backed pixel buffers to avoid repeated CPU texture compression. Local OSLog counters report preview and capture cadence without image or audio content.
+
+`RecordingWorker` isolates GPU-to-encoder synchronization from preview composition. It permits two pending video operations and sixteen audio operations; backpressure drops work rather than building latency. PNG encoding also has a separate queue. Recordings offer 24, 30 and 60 fps. Their timestamp slots are relative to the first video tick on the shared host clock, avoiding duplicate slots caused by absolute-clock timer phase.
+
+Fresh frames, demo playback or recording/finalization hold a user-initiated, latency-critical process activity. It keeps background media work from being throttled by App Nap and timer coalescing. The activity ends when inputs expire and recording has finished, or on shutdown. It permits idle system sleep.
 
 ## One composed output
 
@@ -27,5 +35,7 @@ The Xcode project links the root `DeskViewKit` package and pins FoyerKit to comm
 ## Output and system effects
 
 The clean Output window shows the shared composed preview. A call app can screen-share this window. Virtual-camera system extensions are outside the current implementation.
+
+The Align Desk View action presents `AVCaptureDeskViewApplication` with setup-completion tracking. Apple owns the physical overhead region and its perspective correction; the app's digital crop is applied afterward. Alignment opens the selected camera preview if necessary and resets the extra desk crop after setup completes.
 
 Center Stage uses cooperative AVFoundation control when the active camera format supports it. Portrait, Studio Light, background replacement and microphone modes remain controlled through macOS system UI. State is refreshed while a real preview runs. Reaction calls validate the active device's advertised reaction set before invoking the effect.

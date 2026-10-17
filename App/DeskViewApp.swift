@@ -67,7 +67,10 @@ final class StudioAppDelegate: NSObject, NSApplicationDelegate {
     weak var model: StudioModel?
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard let model else { return .terminateNow }
-        if model.isSaving || model.isConnecting { return .terminateCancel }
+        if model.isSaving { return .terminateCancel }
+        // A camera permission prompt can outlive its async request. Nothing is
+        // recording while connecting, so the user must still be able to quit.
+        if model.isConnecting { return .terminateNow }
         Task {
             let saved = await model.stopRecording()
             if saved {
@@ -104,6 +107,8 @@ private struct StudioCommands: Commands {
                 Task { if model.isPreviewRunning { await model.stopPreview() } else { await model.startPreview() } }
             }.disabled(model.isBusy)
             Button("Video Effects…") { model.showEffects() }.disabled(!model.isPreviewRunning || model.isDemo)
+            Button("Align Desk View…") { Task { await model.alignDeskView() } }
+                .disabled(model.isBusy || model.isAligningDeskView || model.isDemo || model.selectedDeskID.isEmpty)
             Divider()
             Button("Show Recordings") { model.showsLibrary = true; Task { await model.refreshLibrary() } }
                 .keyboardShortcut("l", modifiers: [.command, .shift])

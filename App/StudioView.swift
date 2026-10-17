@@ -77,7 +77,7 @@ struct StudioView: View {
                         ForEach(OutputAspect.allCases) { Text($0.title).tag($0) }
                     }
                     Picker("Frame rate", selection: $model.configuration.framesPerSecond) {
-                        Text("24 fps").tag(24); Text("30 fps").tag(30)
+                        Text("24 fps").tag(24); Text("30 fps").tag(30); Text("60 fps").tag(60)
                     }
                 } label: {
                     Text("\(model.configuration.quality.title) · \(model.configuration.aspect.title) · \(model.configuration.safeFrameRate) fps")
@@ -87,11 +87,9 @@ struct StudioView: View {
             GeometryReader { geometry in
                 ZStack {
                     if model.isPreviewRunning {
-                        if let preview = model.preview {
-                            Image(decorative: preview, scale: 1).resizable().aspectRatio(contentMode: .fit)
-                                .overlay { if showsGrid { ThirdsGrid() } }
-                                .accessibilityLabel("Composed recording preview")
-                        }
+                        MetalPreview(stream: model.pipeline.previewStream)
+                            .aspectRatio(model.configuration.outputSize, contentMode: .fit)
+                            .overlay { if showsGrid { ThirdsGrid() } }
                     } else { emptyCanvas }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
@@ -162,7 +160,7 @@ struct StudioView: View {
                     Image(systemName: model.isRecording ? "stop.fill" : "record.circle.fill").font(.system(size: 23))
                     VStack(alignment: .leading, spacing: 2) {
                         Text(model.isSaving ? "Saving…" : (model.isRecording ? "Stop" : "Record")).font(.system(size: 15, weight: .semibold))
-                        Text(model.timecode).font(.system(size: 11, design: .monospaced))
+                        RecordingTimecode(clock: model.recordingClock).font(.system(size: 11, design: .monospaced))
                     }
                 }.frame(width: 116, height: 58)
             }
@@ -189,6 +187,11 @@ struct StudioView: View {
         .font(.system(size: 11)).foregroundStyle(StudioTheme.secondary)
         .padding(.horizontal, 20).frame(height: 36)
     }
+}
+
+private struct RecordingTimecode: View {
+    @ObservedObject var clock: RecordingClockState
+    var body: some View { Text(clock.timecode) }
 }
 
 struct StatusPill: View {
@@ -222,9 +225,9 @@ struct OutputView: View {
     var body: some View {
         ZStack {
             Color.black
-            if model.isPreviewRunning, let preview = model.preview {
-                Image(decorative: preview, scale: 1).resizable().aspectRatio(contentMode: .fit)
-                    .accessibilityLabel(model.isDemo ? "Demo test chart output" : "Clean composed camera output")
+            if model.isPreviewRunning {
+                MetalPreview(stream: model.pipeline.previewStream,
+                             label: model.isDemo ? "Demo test chart output" : "Clean composed camera output")
             } else {
                 ContentUnavailableView("Preview is stopped", systemImage: "video.slash", description: Text("Start the preview in the studio to share this window."))
             }

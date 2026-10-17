@@ -1,5 +1,6 @@
 @preconcurrency import AVFoundation
 import Foundation
+import OSLog
 
 public struct AudioDescriptor: Identifiable, Equatable, Sendable {
     public let id: String
@@ -19,9 +20,26 @@ public struct VideoEffectsState: Equatable, Sendable {
 private final class SampleDelegate: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
                                     AVCaptureAudioDataOutputSampleBufferDelegate, @unchecked Sendable {
     let handler: @Sendable (MediaSample) -> Void
-    init(handler: @escaping @Sendable (MediaSample) -> Void) { self.handler = handler }
+    private let channel: String?
+    private let logger = Logger(subsystem: "org.belweave.deskView", category: "capture-performance")
+    private var reportStart = CMTime.invalid
+    private var frameCount = 0
+    init(channel: String? = nil, handler: @escaping @Sendable (MediaSample) -> Void) {
+        self.channel = channel; self.handler = handler
+    }
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         handler(MediaSample(sampleBuffer))
+        guard let channel else { return }
+        let time = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        guard time.isValid, time.isNumeric else { return }
+        if !reportStart.isValid { reportStart = time; return }
+        frameCount += 1
+        let elapsed = CMTimeGetSeconds(CMTimeSubtract(time, reportStart))
+        if elapsed >= 5 {
+            let fps = Double(frameCount) / elapsed
+            logger.info("\(channel, privacy: .public): \(fps, format: .fixed(precision: 2)) source fps")
+            reportStart = time; frameCount = 0
+        }
     }
 }
 
@@ -116,17 +134,16 @@ public final class CaptureService: @unchecked Sendable {
                     }
                     let session = AVCaptureSession()
                     session.beginConfiguration()
-                    // 1080p is a source request, not the composed output resolution.
-                    // Desk View may expose 1920×1440 and is allowed its native format.
-                    if channel == .camera, session.canSetSessionPreset(.hd1920x1080) { session.sessionPreset = .hd1920x1080 }
-                    else if session.canSetSessionPreset(.high) { session.sessionPreset = .high }
+                    // Set the preset before selecting the explicit 60 fps format.
+                    // macOS does not expose the iOS-only inputPriority preset.
+                    if session.canSetSessionPreset(.high) { session.sessionPreset = .high }
                     let input = try AVCaptureDeviceInput(device: device)
                     guard session.canAddInput(input) else { throw StudioError.unavailable("macOS could not open this camera. Close any app that is holding it and try again.") }
                     session.addInput(input)
                     let output = AVCaptureVideoDataOutput()
                     output.alwaysDiscardsLateVideoFrames = true
                     output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange]
-                    let delegate = SampleDelegate { [pipeline] sample in pipeline.receive(sample, channel: channel) }
+                    let delegate = SampleDelegate(channel: channel.rawValue) { [pipeline] sample in pipeline.receive(sample, channel: channel) }
                     output.setSampleBufferDelegate(delegate, queue: sampleQueue)
                     guard session.canAddOutput(output) else { throw StudioError.unavailable("This camera cannot supply a video stream in the current configuration.") }
                     session.addOutput(output)
@@ -135,14 +152,22 @@ public final class CaptureService: @unchecked Sendable {
                         connection.isVideoMirrored = false
                     }
                     session.commitConfiguration()
-                    if device.activeFormat.videoSupportedFrameRateRanges.contains(where: { $0.minFrameRate <= 30 && $0.maxFrameRate >= 30 }) {
-                        do {
-                            try device.lockForConfiguration()
-                            device.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 30)
-                            device.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 30)
-                            device.unlockForConfiguration()
-                        } catch { /* A shared camera may retain the system's frame rate. */ }
-                    }
+                    do {
+                        try device.lockForConfiguration()
+                        defer { device.unlockForConfiguration() }
+                        if let format = Self.preferredFormat(for: device) { device.activeFormat = format }
+                        let ranges = device.activeFormat.videoSupportedFrameRateRanges
+                        if let sixty = ranges.first(where: { $0.minFrameRate <= 60 && $0.maxFrameRate >= 60 }) {
+                            let duration = CMTimeMaximum(CMTime(value: 1, timescale: 60), sixty.minFrameDuration)
+                            device.activeVideoMinFrameDuration = duration
+                            device.activeVideoMaxFrameDuration = duration
+                        } else if let fastest = ranges.max(by: { $0.maxFrameRate < $1.maxFrameRate }) {
+                            // Desk View and many built-in cameras supply at most
+                            // 30 fps. Never request an unsupported frame duration.
+                            device.activeVideoMinFrameDuration = fastest.minFrameDuration
+                            device.activeVideoMaxFrameDuration = fastest.minFrameDuration
+                        }
+                    } catch { /* Shared hardware may retain the system's format and cadence. */ }
                     delegates[channel.rawValue] = delegate
                     if channel == .camera {
                         cameraSession = session
@@ -160,6 +185,19 @@ public final class CaptureService: @unchecked Sendable {
                     continuation.resume(throwing: error)
                 }
             }
+        }
+    }
+
+    private static func preferredFormat(for device: AVCaptureDevice) -> AVCaptureDevice.Format? {
+        device.formats.max { lhs, rhs in
+            func score(_ format: AVCaptureDevice.Format) -> (Double, Int, Int) {
+                let size = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+                let fps = min(60, format.videoSupportedFrameRateRanges.map(\.maxFrameRate).max() ?? 0)
+                // Prefer full-HD at 60 fps, then the closest available size.
+                let distance = abs(Int(size.width) - 1920) + abs(Int(size.height) - 1080)
+                return (fps, -distance, Int(size.width) * Int(size.height))
+            }
+            return score(lhs) < score(rhs)
         }
     }
 
