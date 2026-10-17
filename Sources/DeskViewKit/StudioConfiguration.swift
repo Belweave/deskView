@@ -87,7 +87,7 @@ public struct StudioConfiguration: Codable, Equatable, Sendable {
     public var layout: StudioLayout = .pictureInPicture
     public var aspect: OutputAspect = .wide
     public var quality: OutputQuality = .fullHD
-    public var framesPerSecond: Int = 30
+    public var framesPerSecond: Int = 60
     public var cameraFraming = SourceFraming()
     public var deskFraming = SourceFraming()
     public var insetCorner: InsetCorner = .bottomTrailing
@@ -95,7 +95,12 @@ public struct StudioConfiguration: Codable, Equatable, Sendable {
     public var deskIsBackground = true
     public init() {}
     public var outputSize: CGSize { quality.size(for: aspect) }
-    public var safeFrameRate: Int { framesPerSecond == 24 ? 24 : 30 }
+    public var safeFrameRate: Int {
+        switch framesPerSecond {
+        case 24, 30: framesPerSecond
+        default: 60
+        }
+    }
 }
 
 public enum CaptureChannel: String, Sendable { case camera, desk }

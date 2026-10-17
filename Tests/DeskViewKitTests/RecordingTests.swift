@@ -5,12 +5,38 @@ import Testing
 @testable import DeskViewKit
 
 struct RecordingTests {
+    @Test func sixtyFPSMovieContainsSixtyDistinctPresentationTimes() async throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
+        defer { try? FileManager.default.removeItem(at: url) }
+        var config = StudioConfiguration(); config.quality = .hd; config.framesPerSecond = 60
+        let context = CIContext()
+        let image = CIImage(color: .red).cropped(to: CGRect(origin: .zero, size: config.outputSize))
+        let recorder = try MovieRecorder(url: url, configuration: config, includesAudio: false, context: context)
+        for frame in 0..<60 {
+            try recorder.append(image: image, at: CMTime(value: Int64(600 + frame), timescale: 60))
+            try await Task.sleep(for: .milliseconds(17))
+        }
+        _ = try await withCheckedThrowingContinuation { continuation in recorder.finish { continuation.resume(with: $0) } }
+        let asset = AVURLAsset(url: url)
+        let track = try #require(try await asset.loadTracks(withMediaType: .video).first)
+        #expect(try await track.load(.nominalFrameRate) == 60)
+        let reader = try AVAssetReader(asset: asset)
+        let output = AVAssetReaderTrackOutput(track: track, outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
+        reader.add(output); #expect(reader.startReading())
+        var times: [CMTime] = []
+        while let sample = output.copyNextSampleBuffer() { times.append(CMSampleBufferGetPresentationTimeStamp(sample)) }
+        #expect(times.count == 60)
+        for pair in zip(times, times.dropFirst()) {
+            #expect(abs(CMTimeGetSeconds(CMTimeSubtract(pair.1, pair.0)) - 1.0 / 60) < 0.0001)
+        }
+    }
+
     @Test func movieContainsComposedVideoAndMicrophoneTrack() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("presentation.mov")
-        var config = StudioConfiguration(); config.quality = .hd; config.layout = .sideBySide
+        var config = StudioConfiguration(); config.quality = .hd; config.layout = .sideBySide; config.framesPerSecond = 30
         let context = CIContext()
         let red = CIImage(color: CIColor(red: 1, green: 0, blue: 0)).cropped(to: CGRect(x: 0, y: 0, width: 320, height: 240))
         let blue = CIImage(color: CIColor(red: 0, green: 0, blue: 1)).cropped(to: red.extent)
@@ -221,9 +247,9 @@ struct RecordingTests {
         }
         let cleared = try #require(latest.withLock { $0 })
         #expect(!cleared.cameraAvailable && !cleared.deskAvailable)
-        #expect(cleared.cameraThumbnail == nil && cleared.deskThumbnail == nil)
+        #expect(cleared.camera == nil && cleared.desk == nil)
         var pixel = [UInt8](repeating: 0, count: 4)
-        CIContext().render(CIImage(cgImage: cleared.image), toBitmap: &pixel, rowBytes: 4,
+        CIContext().render(cleared.image, toBitmap: &pixel, rowBytes: 4,
                            bounds: CGRect(x: 100, y: 100, width: 1, height: 1), format: .RGBA8,
                            colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
         #expect(pixel[0] < 40 && pixel[1] < 40 && pixel[2] < 40)

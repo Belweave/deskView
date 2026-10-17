@@ -25,20 +25,26 @@ final class StudioModel: ObservableObject {
     @Published var selectedCameraID = ""
     @Published var selectedDeskID = ""
     @Published var selectedMicrophoneID = ""
-    @Published private(set) var preview: CGImage?
-    @Published private(set) var cameraThumbnail: CGImage?
-    @Published private(set) var deskThumbnail: CGImage?
     @Published private(set) var cameraAvailable = false
     @Published private(set) var deskAvailable = false
     @Published private(set) var isPreviewRunning = false
     @Published private(set) var isConnecting = false
+    @Published private(set) var isAligningDeskView = false
     @Published private(set) var isRecording = false
     @Published private(set) var isSaving = false
     @Published private(set) var isDemo = false
     @Published private(set) var microphoneActive = false
-    @Published private(set) var audioLevel: Float = 0
+    let audioMeter = AudioMeterState()
+    let recordingClock = RecordingClockState()
+    private var audioLevel: Float {
+        get { audioMeter.level }
+        set { audioMeter.level = newValue }
+    }
     @Published private(set) var effects = VideoEffectsState()
-    @Published private(set) var elapsed: TimeInterval = 0
+    private var elapsed: TimeInterval {
+        get { recordingClock.elapsed }
+        set { recordingClock.elapsed = newValue }
+    }
     @Published private(set) var cameraPermission = AVCaptureDevice.authorizationStatus(for: .video)
     @Published private(set) var library: [MediaItem] = []
     @Published var destination: URL
@@ -57,6 +63,7 @@ final class StudioModel: ObservableObject {
     private var recordingID: UUID?
     private var finalizingRecordingID: UUID?
     private var microphonePreferenceWasSet: Bool
+    private let deskViewApplication = AVCaptureDeskViewApplication()
 
     init() {
         microphonePreferenceWasSet = UserDefaults.standard.object(forKey: "studio.microphone") != nil
@@ -75,17 +82,13 @@ final class StudioModel: ObservableObject {
     var isBusy: Bool { isRecording || isSaving || isConnecting }
     var canCapture: Bool {
         isPreviewRunning && (!configuration.layout.needsCamera || cameraAvailable) &&
-        (!configuration.layout.needsDesk || deskAvailable) && !isConnecting && !isSaving
+        (!configuration.layout.needsDesk || deskAvailable) && !isConnecting && !isSaving && !isAligningDeskView
     }
     var missingSourceMessage: String? {
         if !isPreviewRunning { return nil }
         if configuration.layout.needsCamera && !cameraAvailable { return "Waiting for the camera. Reconnect it or choose Desk layout." }
         if configuration.layout.needsDesk && !deskAvailable { return "Desk View is unavailable. Connect a compatible device or choose Camera layout." }
         return nil
-    }
-    var timecode: String {
-        let seconds = max(0, Int(elapsed))
-        return String(format: "%02d:%02d:%02d", seconds / 3600, (seconds / 60) % 60, seconds % 60)
     }
 
     func start() {
@@ -94,11 +97,8 @@ final class StudioModel: ObservableObject {
         pipeline.onPreview = { [weak self] frame in
             Task { @MainActor [weak self] in
                 guard let self else { return }
-                preview = frame.image
-                cameraThumbnail = frame.cameraThumbnail
-                deskThumbnail = frame.deskThumbnail
-                cameraAvailable = frame.cameraAvailable
-                deskAvailable = frame.deskAvailable
+                if cameraAvailable != frame.cameraAvailable { cameraAvailable = frame.cameraAvailable }
+                if deskAvailable != frame.deskAvailable { deskAvailable = frame.deskAvailable }
             }
         }
         pipeline.onAudioLevel = { [weak self] value in
@@ -160,8 +160,12 @@ final class StudioModel: ObservableObject {
                 try? await Task.sleep(for: .seconds(1))
                 guard !Task.isCancelled, let self else { break }
                 if let startedAt { elapsed = Date().timeIntervalSince(startedAt) }
-                if isPreviewRunning && !isDemo { effects = await capture.effects() }
-                cameraPermission = AVCaptureDevice.authorizationStatus(for: .video)
+                if isPreviewRunning && !isDemo {
+                    let current = await capture.effects()
+                    if effects != current { effects = current }
+                }
+                let permission = AVCaptureDevice.authorizationStatus(for: .video)
+                if cameraPermission != permission { cameraPermission = permission }
             }
         }
         Task { await refreshLibrary() }
@@ -281,7 +285,7 @@ final class StudioModel: ObservableObject {
         await capture.stopAll()
         pipeline.setDemo(camera: nil, desk: nil)
         isDemo = false; isPreviewRunning = false; microphoneActive = false; audioLevel = 0
-        cameraAvailable = false; deskAvailable = false; cameraThumbnail = nil; deskThumbnail = nil
+        cameraAvailable = false; deskAvailable = false
         statusMessage = "Preview stopped. Cameras and microphone are off."
         isConnecting = false
     }
@@ -389,6 +393,31 @@ final class StudioModel: ObservableObject {
     }
 
     func showEffects() { AVCaptureDevice.showSystemUserInterface(.videoEffects) }
+    func alignDeskView() async {
+        guard !isBusy, !isAligningDeskView, !isDemo, !selectedDeskID.isEmpty else { return }
+        if !isPreviewRunning { await startPreview() }
+        guard isPreviewRunning else { return }
+        isAligningDeskView = true
+        statusMessage = "In Apple's Desk View window, place the keyboard inside the border and click Start Desk View."
+        defer { isAligningDeskView = false }
+        let launch = AVCaptureDeskViewApplication.LaunchConfiguration()
+        launch.requiresSetUpModeCompletion = true
+        do {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                deskViewApplication.present(launchConfiguration: launch) { error in
+                    if let error { continuation.resume(throwing: error) }
+                    else { continuation.resume() }
+                }
+            }
+            // Native alignment defines the overhead region. Remove any extra
+            // digital crop so the canvas shows the newly aligned desk region.
+            configuration.deskFraming = SourceFraming()
+            statusMessage = "Desk View alignment is ready. The canvas uses the paired overhead camera."
+        } catch {
+            alertMessage = "Desk View setup could not finish. \(error.localizedDescription)"
+            statusMessage = "Choose Align Desk View to try the overhead setup again."
+        }
+    }
     func showMicrophoneModes() { AVCaptureDevice.showSystemUserInterface(.microphoneModes) }
     func setCenterStage(_ enabled: Bool) { Task { await capture.setCenterStage(enabled); effects = await capture.effects() } }
     func reaction(_ type: AVCaptureReactionType) { capture.performReaction(type) }
@@ -401,5 +430,19 @@ final class StudioModel: ObservableObject {
         statusTask?.cancel()
         await capture.stopAll()
         pipeline.shutdown()
+    }
+}
+
+// Frequent meter/clock ticks must not invalidate the full studio, inspector,
+// source panels and output window through StudioModel.objectWillChange.
+@MainActor final class AudioMeterState: ObservableObject {
+    @Published var level: Float = 0
+}
+
+@MainActor final class RecordingClockState: ObservableObject {
+    @Published var elapsed: TimeInterval = 0
+    var timecode: String {
+        let seconds = max(0, Int(elapsed))
+        return String(format: "%02d:%02d:%02d", seconds / 3600, (seconds / 60) % 60, seconds % 60)
     }
 }

@@ -14,7 +14,7 @@ struct SourceSidebar: View {
                     Button { model.refreshDevices() } label: { Image(systemName: "arrow.clockwise") }
                         .buttonStyle(.borderless).help("Refresh connected cameras").accessibilityLabel("Refresh sources")
                 }
-                source(title: "Camera", symbol: "video", image: model.cameraThumbnail, available: model.cameraAvailable) {
+                source(title: "Camera", symbol: "video", content: .camera, available: model.cameraAvailable) {
                     if model.isDemo { demoSource("Demo camera") }
                     else {
                     Picker("Camera", selection: Binding(get: { model.selectedCameraID }, set: model.chooseCamera)) {
@@ -26,7 +26,7 @@ struct SourceSidebar: View {
                     }
                     }
                 }
-                source(title: "Desk View", symbol: "square.and.pencil", image: model.deskThumbnail, available: model.deskAvailable) {
+                source(title: "Desk View", symbol: "square.and.pencil", content: .desk, available: model.deskAvailable) {
                     if model.isDemo { demoSource("Demo Desk View") }
                     else {
                     Picker("Desk View", selection: Binding(get: { model.selectedDeskID }, set: model.chooseDesk)) {
@@ -38,6 +38,13 @@ struct SourceSidebar: View {
                     }
                     }
                 }
+                if !model.isDemo && !model.selectedDeskID.isEmpty {
+                    Button(model.isAligningDeskView ? "Aligning Desk View…" : "Align Desk View…") {
+                        Task { await model.alignDeskView() }
+                    }
+                    .buttonStyle(.bordered).disabled(model.isBusy || model.isAligningDeskView)
+                    .help("Open Apple's overhead setup. If Desk View is already open, choose View → Return to Setup in its menu.")
+                }
                 Divider()
                 VStack(alignment: .leading, spacing: 10) {
                     Label("Microphone", systemImage: "mic").font(.system(size: 12, weight: .medium))
@@ -47,12 +54,7 @@ struct SourceSidebar: View {
                         ForEach(model.microphones) { Text($0.name).tag($0.id) }
                     }.labelsHidden().disabled(model.isBusy) }
                     HStack(spacing: 6) {
-                        GeometryReader { proxy in
-                            Capsule().fill(.white.opacity(0.12))
-                                .overlay(alignment: .leading) {
-                                    Capsule().fill(StudioTheme.accent).frame(width: proxy.size.width * CGFloat(min(model.audioLevel * 3, 1)))
-                                }
-                        }.frame(height: 4).accessibilityHidden(true)
+                        AudioLevelMeter(meter: model.audioMeter).frame(height: 4).accessibilityHidden(true)
                         Text(model.microphoneActive ? "On" : "Off").font(.system(size: 10)).foregroundStyle(StudioTheme.secondary)
                     }.accessibilityElement(children: .ignore).accessibilityLabel(model.microphoneActive ? "Microphone active" : "Microphone off")
                     if model.microphoneActive {
@@ -85,7 +87,7 @@ struct SourceSidebar: View {
             .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 6))
     }
 
-    private func source<Content: View>(title: String, symbol: String, image: CGImage?, available: Bool, @ViewBuilder picker: () -> Content) -> some View {
+    private func source<Content: View>(title: String, symbol: String, content: PreviewContent, available: Bool, @ViewBuilder picker: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 9) {
             HStack(spacing: 7) {
                 Image(systemName: symbol).foregroundStyle(StudioTheme.accent)
@@ -98,8 +100,8 @@ struct SourceSidebar: View {
             picker().labelsHidden().disabled(model.isBusy || model.isDemo).frame(maxWidth: .infinity)
             ZStack {
                 RoundedRectangle(cornerRadius: 9).fill(.black.opacity(0.3))
-                if let image {
-                    Image(decorative: image, scale: 1).resizable().aspectRatio(contentMode: .fill)
+                if available {
+                    MetalPreview(stream: model.pipeline.previewStream, content: content, label: "\(title) source preview")
                 } else {
                     VStack(spacing: 7) {
                         Image(systemName: symbol).font(.system(size: 22, weight: .light))
@@ -108,6 +110,18 @@ struct SourceSidebar: View {
                 }
             }.frame(height: 112).clipShape(RoundedRectangle(cornerRadius: 9))
                 .accessibilityLabel("\(title) source preview")
+        }
+    }
+}
+
+private struct AudioLevelMeter: View {
+    @ObservedObject var meter: AudioMeterState
+    var body: some View {
+        GeometryReader { proxy in
+            Capsule().fill(.white.opacity(0.12))
+                .overlay(alignment: .leading) {
+                    Capsule().fill(StudioTheme.accent).frame(width: proxy.size.width * CGFloat(min(meter.level * 3, 1)))
+                }
         }
     }
 }
@@ -270,7 +284,8 @@ struct SetupGuide: View {
             HStack { Text("Bring your iPhone into the studio.").font(.title2.bold()); Spacer(); Button("Done") { dismiss() }.keyboardShortcut(.defaultAction) }
             guide("Connect Continuity Camera", "Use the same Apple Account on your Mac and iPhone, with two-factor authentication. Turn on Wi-Fi and Bluetooth, enable Continuity Camera in iPhone Settings → General → AirPlay & Continuity, then place your locked iPhone nearby in landscape orientation. A trusted USB connection also works.", symbol: "iphone.and.arrow.forward")
             guide("Choose both views", "Refresh Sources, select your iPhone camera, and choose its paired Desk View. Some recent Macs and displays provide Desk View through their built-in cameras. If no Desk View device appears, check Apple's hardware requirements.", symbol: "rectangle.on.rectangle")
-            guide("Frame, then record", "Choose Camera + desk or Side by side. Select Camera or Desk in Framing to adjust its crop, pan, mirror and rotation. Choose a microphone or select No microphone for a silent recording. The canvas is what gets saved.", symbol: "record.circle")
+            guide("Align the overhead view", "Keep your iPhone mounted above the display with its rear cameras facing you. Choose Align Desk View, adjust Apple's selection border around your keyboard, then click Start Desk View. If its window is already open, choose View → Return to Setup. This sets the overhead region before any digital crop.", symbol: "viewfinder")
+            guide("Frame, then record", "Choose Camera + desk or Side by side. Select Camera or Desk in Framing to adjust its crop, pan, mirror and rotation. The preview runs at 60 Hz; recording offers 24, 30 or 60 fps. Source motion depends on the camera's supported rate. Choose a microphone or No microphone for silence.", symbol: "record.circle")
             guide("Share a clean window", "Open Output window, then choose that window in your call app's screen sharing controls. deskView() does not install a virtual camera.", symbol: "rectangle.on.rectangle")
             HStack(spacing: 18) {
                 Link("Apple Desk View requirements ↗", destination: URL(string: "https://support.apple.com/en-us/121541")!)

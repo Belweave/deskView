@@ -19,7 +19,9 @@ A [Belweave](https://github.com/Belweave) project. First-launch welcome powered 
 - **Four layouts.** Camera + desk picture in picture, side by side, camera only, or desk only. Portrait output stacks the two views vertically.
 - **Frame each source.** Digital crop zoom, horizontal/vertical pan, mirroring and 90° rotation. Move and resize the inset, or swap the background.
 - **Record what you see.** The same Core Image compositor drives the preview, PNG snapshots and H.264 `.mov` recording, with optional AAC microphone audio.
-- **Choose your output.** 720p, 1080p or 4K canvas; 16:9, 9:16 or square; 24 or 30 fps. Source detail and frame rate depend on the connected device. 4K output may upscale a lower-resolution source.
+- **Choose your output.** 720p, 1080p or 4K canvas; 16:9, 9:16 or square; 24, 30 or 60 fps. New studios default to 60 fps. Source detail and motion depend on the connected device; a 30 fps source repeats frames in 60 fps output. 4K output may upscale a lower-resolution source.
+- **Smooth native previews.** Metal draws the canvas, source views and clean output at a 60 Hz target without CPU image copies or per-frame SwiftUI updates. Capture buffers and queued encoder frames are bounded.
+- **Align the overhead view.** Open Apple's Desk View setup directly from the studio, frame the keyboard inside its selection border, then start Desk View.
 - **Use macOS effects.** Center Stage where supported, status for Portrait/Studio Light/background replacement, the system video-effects panel, microphone modes and available reaction effects.
 - **Share a clean view.** Open the separate Output window and select it in your call app's screen-sharing picker.
 - **Keep everything local.** Choose a save folder, browse recordings and snapshots, open them, or reveal them in Finder. No account, analytics, server, or network capture.
@@ -61,9 +63,10 @@ Local builds are ad-hoc signed. Developer ID signing, notarization and App Store
 
 1. Mount your locked iPhone near the Mac, or attach it with a trusted USB cable. Enable Continuity Camera in iPhone Settings → General → AirPlay & Continuity.
 2. Refresh Sources, choose your camera and its paired Desk View, then **Start preview**. Allow camera and optional microphone access.
-3. Choose a layout. Select **Camera** or **Desk** in Framing and adjust that source. The framing grid is a preview aid and is not recorded.
-4. Select output dimensions and microphone, then press **Record** (`⌘R`). Press it again to stop and finish saving.
-5. Open **Recordings** (`⇧⌘L`) to play the movie or reveal it in Finder. Snapshots use `⇧⌘S`.
+3. Choose **Align Desk View…** if the overhead region needs adjustment. Keep the rear cameras facing you, frame your keyboard in Apple's setup window, and click **Start Desk View**. If already open, choose **View → Return to Setup** in that window.
+4. Choose a layout. Select **Camera** or **Desk** in Framing and adjust that source. The framing grid is a preview aid and is not recorded.
+5. Select output dimensions and microphone, then press **Record** (`⌘R`). Press it again to stop and finish saving.
+6. Open **Recordings** (`⇧⌘L`) to play the movie or reveal it in Finder. Snapshots use `⇧⌘S`.
 
 The default destination is `~/Movies/deskView/`. Settings lets you choose another folder. Output settings and source changes are locked during recording. If a required camera stops sending frames, the app finishes the available portion and reports the interruption.
 

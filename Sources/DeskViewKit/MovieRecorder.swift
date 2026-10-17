@@ -28,6 +28,7 @@ final class MovieRecorder: @unchecked Sendable {
             AVVideoCompressionPropertiesKey: [
                 AVVideoAverageBitRateKey: Int(size.width * size.height * 7),
                 AVVideoExpectedSourceFrameRateKey: frameRate,
+                AVVideoAllowFrameReorderingKey: false,
                 AVVideoMaxKeyFrameIntervalKey: frameRate * 2
             ]
         ])

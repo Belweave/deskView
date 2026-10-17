@@ -3,6 +3,19 @@ import CoreImage
 @testable import DeskViewKit
 
 struct CompositorTests {
+    @Test func outputSupportsSixtyFramesPerSecond() {
+        var config = StudioConfiguration()
+        #expect(config.safeFrameRate == 60)
+        config.framesPerSecond = 60
+        #expect(config.safeFrameRate == 60)
+        config.framesPerSecond = 24
+        #expect(config.safeFrameRate == 24)
+        config.framesPerSecond = 30
+        #expect(config.safeFrameRate == 30)
+        config.framesPerSecond = -1
+        #expect(config.safeFrameRate == 60)
+    }
+
     private let context = CIContext(options: [.useSoftwareRenderer: true])
     private let compositor = FrameCompositor()
     private var red: CIImage { CIImage(color: CIColor(red: 1, green: 0, blue: 0)).cropped(to: CGRect(x: 0, y: 0, width: 320, height: 240)) }
