@@ -10,7 +10,7 @@ Run `./scripts/test.sh`. It verifies the selected Xcode, then runs Swift Testing
 
 Encoder tests run serially to bound hardware/software codec contention on virtual runners. The expiry case deliberately ages an initial frame during startup, refreshes both feeds once recording is ready, then measures the two-second lease from that final arrival.
 
-The 60 fps regression test decodes sixty movie frames and checks their distinct presentation times. `PreviewTests` verifies bounded latest-frame replacement, arrival-time expiry, 60 Hz composition, and actual GPU-rendered pixels and letterboxing. The Metal pixel check is skipped on CI hosts without a Metal device.
+The 60 fps regression test decodes sixty movie frames and checks their distinct presentation times. `PreviewTests` verifies bounded latest-frame replacement, arrival-time expiry, repeated preview publication without per-frame UI observation, and actual GPU-rendered pixels and letterboxing. It waits for frames through cold image upload rather than treating a virtual runner's scheduling as a performance benchmark. The Metal pixel check is skipped on CI hosts without a Metal device.
 
 ## Performance measurement
 
