@@ -88,6 +88,7 @@ struct StudioView: View {
                 ZStack {
                     if model.isPreviewRunning {
                         MetalPreview(stream: model.pipeline.previewStream)
+                            .aspectRatio(model.configuration.outputSize, contentMode: .fit)
                             .overlay { if showsGrid { ThirdsGrid() } }
                     } else { emptyCanvas }
                 }
