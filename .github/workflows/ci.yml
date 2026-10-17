@@ -21,6 +21,8 @@ jobs:
         run: ./scripts/check-toolchain.sh
       - name: Test composition and recording
         run: ./scripts/test.sh
+      - name: Install Metal toolchain
+        run: xcodebuild -downloadComponent MetalToolchain
       - name: Build the native app
         run: ./scripts/build.sh Debug
       - name: Retain build logs

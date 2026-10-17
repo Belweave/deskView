@@ -13,6 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: ./scripts/test.sh
+      - name: Install Metal toolchain
+        run: xcodebuild -downloadComponent MetalToolchain
       - run: ./scripts/build.sh Release
       - name: Create development ZIP
         run: |
