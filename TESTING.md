@@ -8,6 +8,8 @@ Run `./scripts/test.sh`. It verifies the selected Xcode, then runs Swift Testing
 
 `RecordingTests` writes a real movie containing composed H.264 video and a synthetic AAC tone. It decodes video pixels and audio samples, verifies a deliberate 200 ms audio delay, and reads track dimensions and duration. It also feeds live `CMSampleBuffer` frames through the capture ingestion path, verifies cleared-source preview pixels and availability, two-second expiry and playable interruption finalization, duplicate Stop calls, recording UUID isolation, unused-source failure policy, empty-movie cleanup, required-source rejection and full-resolution PNG dimensions. Tests use temporary directories and clean up only their own files.
 
+Encoder tests run serially to bound hardware/software codec contention on virtual runners. The expiry case deliberately ages an initial frame during startup, refreshes both feeds once recording is ready, then measures the two-second lease from that final arrival.
+
 The 60 fps regression test decodes sixty movie frames and checks their distinct presentation times. `PreviewTests` verifies bounded latest-frame replacement, arrival-time expiry, 60 Hz composition, and actual GPU-rendered pixels and letterboxing. The Metal pixel check is skipped on CI hosts without a Metal device.
 
 ## Performance measurement

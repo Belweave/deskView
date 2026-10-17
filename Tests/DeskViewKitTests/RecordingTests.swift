@@ -4,6 +4,7 @@ import Synchronization
 import Testing
 @testable import DeskViewKit
 
+@Suite(.serialized)
 struct RecordingTests {
     @Test func sixtyFPSMovieContainsSixtyDistinctPresentationTimes() async throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
@@ -211,7 +212,13 @@ struct RecordingTests {
         pipeline.receive(MediaSample(frame), channel: .camera)
         pipeline.receive(MediaSample(frame), channel: .desk)
         pipeline.start()
+        // Exercise a frame that has already aged during cold encoder setup.
+        try await Task.sleep(for: .milliseconds(750))
         try await pipeline.startRecording(to: url, includesAudio: false, id: id)
+        // Real capture keeps delivering during startup. Establish the final
+        // arrival after the encoder is ready, then verify its two-second lease.
+        pipeline.receive(MediaSample(frame), channel: .camera)
+        pipeline.receive(MediaSample(frame), channel: .desk)
         // Frames are delivered through the actual capture ingestion path,
         // rather than setDemo. Their two-second freshness lease then expires.
         try await Task.sleep(for: .milliseconds(2200))
@@ -219,7 +226,8 @@ struct RecordingTests {
         let asset = AVURLAsset(url: url)
         #expect(try await asset.loadTracks(withMediaType: .video).count == 1)
         let duration = CMTimeGetSeconds(try await asset.load(.duration))
-        #expect(duration > 1.5 && duration < 2.3)
+        #expect(duration > 1.5)
+        #expect(duration < 2.3)
         do {
             try await pipeline.snapshot(to: folder.appendingPathComponent("stale.png"))
             Issue.record("Expired live frames must not be saved as a fresh snapshot.")

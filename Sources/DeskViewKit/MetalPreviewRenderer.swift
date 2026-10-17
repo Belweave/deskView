@@ -6,6 +6,12 @@ import Synchronization
 /// Encodes directly into an IOSurface-backed drawable. At most two frames can
 /// be in flight; the UI never waits for the GPU or an encoder to catch up.
 public final class MetalPreviewRenderer: @unchecked Sendable {
+    // These retained Metal resources belong to one queue submission. Only the
+    // encoder/GPU writes the texture; CPU-side resource metadata is immutable.
+    private struct Destination: @unchecked Sendable {
+        let texture: MTLTexture
+        let drawable: CAMetalDrawable?
+    }
     public struct Statistics: Sendable {
         public var completedFrames = 0
         public var skippedFrames = 0
@@ -34,8 +40,9 @@ public final class MetalPreviewRenderer: @unchecked Sendable {
             counters.withLock { $0.skippedFrames += 1 }
             return false
         }
-        encodingQueue.async { [self] in
-            autoreleasepool { encode(image, to: texture, fitting: fitting, drawable: drawable) }
+        let destination = Destination(texture: texture, drawable: drawable)
+        encodingQueue.async { [self, destination] in
+            autoreleasepool { encode(image, to: destination.texture, fitting: fitting, drawable: destination.drawable) }
         }
         return true
     }
